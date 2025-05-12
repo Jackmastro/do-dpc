@@ -221,7 +221,7 @@ class TPC(DPC):
         Lambda_uy = self.reg_matrices.Lambda_uy  # type: ignore
         Lambda_uz = self.reg_matrices.Lambda_uz  # type: ignore
 
-        F_1 = np.linalg.pinv(H_u.T @ Q_horizon @ H_u + R_horizon + Lambda_uu)
+        F_1 = pinv(H_u.T @ Q_horizon @ H_u + R_horizon + Lambda_uu)
         F_2 = -H_u.T @ Q_horizon @ H_p - Lambda_uz
         F_3 = H_u.T @ Q_horizon - Lambda_uy
 
@@ -244,7 +244,7 @@ class TPC(DPC):
 
         L = DPCUtils.save_lq_decomposition(self.hankel_matrices.Z)
 
-        Phi = self._extract_L0y_matrix(L) @ np.linalg.pinv(L)
+        Phi = self._extract_L0y_matrix(L) @ pinv(L)
 
         Phi_P, Phi_U, Phi_Y = self._split_Phi_into_PhiP_PhiUF_PhiYF(Phi)
 
