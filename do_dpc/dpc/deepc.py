@@ -149,9 +149,13 @@ class DeePC(DPC):
         self.specific_params = DeePCSpecificParameters(suppress_warnings=True)
         self.specific_params_set = False
 
+        self.pred_matrices: DeePCPredictorMatrices
         self.reg_matrices: DeePCRegularizationMatrices
 
         super().__init__(dpc_params, training_data)
+
+        # Check Hankel dimension
+        self._validate_trajectory_dims()
 
         # Additional slack variables
         self.g_cp = cp.Variable(self.hankel_matrices.n_col)
@@ -317,3 +321,15 @@ class DeePC(DPC):
         sigma = cp.hstack(sigma_list)
 
         return sigma
+
+    def _validate_trajectory_dims(self) -> None:
+        """
+        Validate the dimensions of parameters chosen, so that the order of the representable system is positive.
+        """
+        n = (self.hankel_matrices.n_samples - (self.dims.m + 1) * (self.dpc_params.tau_p + self.dpc_params.tau_f) + 1)
+        
+        if n <= 0:
+            logger.error(
+                f"The maximum order of the system representable with these parameters is negative ({n}). "
+                "Pick an higher n_samples and/or lower tau_p and tau_f: n_samples >= (m + 1) (tau_p + tau_f) + n - 1. "
+            )
