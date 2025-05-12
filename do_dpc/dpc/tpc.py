@@ -106,6 +106,9 @@ class TPC(DPC):
         """
         self.tpc_helper_matrices: Optional[TPCHelperMatrices] = None
 
+        self.pred_matrices: TPCPredictorMatrices
+        self.reg_matrices: TPCRegularizationMatrices
+
         super().__init__(dpc_params, training_data)
 
     def get_regularization_cost_expression(self) -> cp.Expression:
