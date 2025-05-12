@@ -214,18 +214,18 @@ class TPC(DPC):
         H_u = self.pred_matrices.H_u  # type: ignore
         H_p = self.pred_matrices.H_p  # type: ignore
 
-        Q_horizon = self.dpc_params.Q_horizon
-        R_horizon = self.dpc_params.R_horizon
+        Q_h = self.dpc_params.Q_horizon
+        R_h = self.dpc_params.R_horizon
 
         Lambda_uu = self.reg_matrices.Lambda_uu  # type: ignore
         Lambda_uy = self.reg_matrices.Lambda_uy  # type: ignore
         Lambda_uz = self.reg_matrices.Lambda_uz  # type: ignore
 
-        F_1 = pinv(H_u.T @ Q_horizon @ H_u + R_horizon + Lambda_uu)
-        F_2 = -H_u.T @ Q_horizon @ H_p - Lambda_uz
-        F_3 = H_u.T @ Q_horizon - Lambda_uy
+        F_1 = pinv(H_u.T @ Q_h @ H_u + R_h + Lambda_uu)
+        F_2 = -H_u.T @ Q_h @ H_p - Lambda_uz
+        F_3 = H_u.T @ Q_h - Lambda_uy
 
-        return DPCClosedFormSolutionMatrices(K_z_p=F_1 @ F_2, K_y_r=F_1 @ F_3, K_u_r=F_1 @ R_horizon)
+        return DPCClosedFormSolutionMatrices(K_z_p=F_1 @ F_2, K_y_r=F_1 @ F_3, K_u_r=F_1 @ R_h)
 
     def _calculate_helper_matrices(self) -> TPCHelperMatrices:
         """
