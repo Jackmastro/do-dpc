@@ -190,7 +190,7 @@ class DPC(ABC):
 
         # CVXPY Optimization Problem Initialization
         self.constr: list[Constraint] = []
-        self.cost: cp.Expression = 0
+        self.cost: cp.Expression = cp.Constant(0.0)
         self.problem = cp.Problem(cp.Minimize(self.cost), self.constr)  # type: ignore
         self.valid_optimization_problem = False
 

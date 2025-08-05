@@ -246,15 +246,11 @@ class DeePC(DPC):
             return None
 
         if self.specific_params.lambda_sigma == np.inf:
-            logger.warning(
-                "lambda_sigma is set to np.inf. Cannot calculate the closed-form solution. "
-            )
+            logger.warning("lambda_sigma is set to np.inf. Cannot calculate the closed-form solution. ")
             return None
 
         if self.specific_params.lambda_p == 0:
-            logger.warning(
-                "lambda_p is set to 0. "
-            )
+            logger.warning("lambda_p is set to 0. ")
 
         I_minus_Pi = self.reg_matrices.I_minus_Pi  # type: ignore
         U_f = self.hankel_matrices.U_f
@@ -265,7 +261,10 @@ class DeePC(DPC):
         R_h = self.dpc_params.R_horizon
 
         T_1 = Y_f.T @ Q_h @ Y_f + U_f.T @ R_h @ U_f
-        T_2 = self.specific_params.lambda_g_2 * np.eye(self.hankel_matrices.n_col) + self.specific_params.lambda_p * I_minus_Pi.T @ I_minus_Pi
+        T_2 = (
+            self.specific_params.lambda_g_2 * np.eye(self.hankel_matrices.n_col)
+            + self.specific_params.lambda_p * I_minus_Pi.T @ I_minus_Pi
+        )
         T_3 = self.specific_params.lambda_sigma * Z_p.T @ Z_p
 
         F_1 = U_f @ pinv(T_1 + T_2 + T_3)
@@ -326,10 +325,11 @@ class DeePC(DPC):
         """
         Validate the dimensions of parameters chosen, so that the order of the representable system is positive.
         """
-        n = (self.hankel_matrices.n_samples - (self.dims.m + 1) * (self.dpc_params.tau_p + self.dpc_params.tau_f) + 1)
-        
+        n = self.hankel_matrices.n_samples - (self.dims.m + 1) * (self.dpc_params.tau_p + self.dpc_params.tau_f) + 1
+
         if n <= 0:
             logger.error(
-                f"The maximum order of the system representable with these parameters is negative ({n}). "
-                "Pick an higher n_samples and/or lower tau_p and tau_f: n_samples >= (m + 1) (tau_p + tau_f) + n - 1. "
+                "Maximum system order with these parameters is negative (%d). "
+                "Increase n_samples or decrease tau_p/tau_f: n_samples >= (m + 1) * (tau_p + tau_f) + n - 1.",
+                n,
             )
